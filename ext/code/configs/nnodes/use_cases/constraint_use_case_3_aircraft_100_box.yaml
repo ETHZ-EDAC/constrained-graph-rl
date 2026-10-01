@@ -1,0 +1,8 @@
+constraint: Num-Nodes-Box
+params:
+- 90.0
+- 110.0
+target_metrics:
+  num_nodes: 100
+  spectral_gap: 0.3
+  rectangularity: 1.0

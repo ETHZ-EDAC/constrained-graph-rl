@@ -1,0 +1,78 @@
+meta:
+  render: true
+  total_ppo_iterations: 3000
+  eval_freq: 50
+  save_freq: 50
+  test_episodes: 8
+  enable_cuda: true
+
+env:
+  parallel_env: true
+  num_nodes: 60
+  step_limit: 600
+  num_envs: 30
+  enable_cmaes: true
+  reward_type: "metrics"
+  terminal_reward: "metrics"
+  shaping_weight: 0.1
+  reward_shaping: false
+
+PPO:
+  n_epochs: 5
+  n_steps: 90  # try 90 or 60
+  batch_size: 675 # num_envs * n_steps must be divisible by 4: 675 for 90 nsteps
+  seed: 45
+  learning_rate: 0.0004
+  lr_schedule:
+    warmup_steps: 108000 # total timesteps = n_steps * num_envs * total_ppo_iterations
+    warmup_start_factor: 0.1
+    decay_type: "cosine"
+    end_lr: 0.00001
+  gae_lambda: 0.95
+  ent_coef: 0.01
+  entropy_mode: "gaussian" # corrected_entropy, or gaussian
+  gamma: 0.99
+  clip_range: 0.2
+  clip_range_vf: null
+  vf_coef: 0.5
+  cuda_deterministic: false
+  max_grad_norm: 1.0
+  target_kl: 0.02
+
+action_projector:
+  use_action_projector: true
+  projection_supervised_epochs: 7
+  stop_training_action_projector_after: 200
+  replay_buffer_size: 10
+  hidden_dim: 32
+  embed_dim: 20
+
+feature_extractor:
+  hidden_dim: 32
+  embed_dim_deg: 20
+  num_layers: 3
+  num_freqs: 4
+
+actor_critic:
+  share_features_extractor: false
+  use_joint_dist: false
+  use_global_log_std: true
+  init_std: 1.0
+  rule_head:
+    hidden_dim: 32
+    num_layers: 2
+  mean_head:
+    hidden_dim: 32
+    num_layers: 2
+    embed_dim: 20
+  log_std_head:
+    num_layers: 1
+    embed_dim: 20
+  glob_critic:
+    hidden_dim: 64
+    num_layers: 2
+
+distribution:
+  weight_entropy_node: 0.9
+  weight_entropy_cat: 0.9
+  weight_entropy_cont: 0.1

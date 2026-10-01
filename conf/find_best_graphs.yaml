@@ -1,0 +1,71 @@
+# Default Hydra configuration for scripts/find_best_graphs_for_targets.py.
+# Override values from the CLI, e.g.
+# `uv run python scripts/find_best_graphs_for_targets.py seed=7 plot_dir=outputs/foo`
+
+# Path to the target metrics definition consumed by load_target_metrics().
+target_config: conf/target_metrics/default.yaml
+
+# Glob for dataset .pt files searched by find_similar_graph_in_dataset().
+pt_pattern: ext/hog_planar/*.pt
+
+# Directory for best-graph plots. Set to null to disable plotting.
+plot_dir: outputs/best_match_plots_v4/case_3_100_nodes
+
+# Base random seed for generator sampling.
+seed: 42
+
+# Default sample count when a batch does not specify one.
+num_samples: 200
+
+# Optional generator-name filter. Leave empty (or null) to include all generators
+# defined by the batch configuration.
+generators: []
+
+# Generator batch definitions. Each entry selects a generator, assigns its sample
+# budget, and optionally sweeps GraphGeneratorConfig overrides. Lists expand to
+# Cartesian products.
+generator_batches:
+  # Boltzmann planar graphs: slower sampler, so keep the budget small.
+  - name: boltzmann_planar
+    samples: 20
+
+  # Erdős–Rényi G(n,p) sweep with 10k samples per edge probability.
+  - name: erdos_renyi_gnp
+    samples: 200
+    config:
+      edge_probability: [0.04, 0.05, 0.07, 0.10]
+      ensure_connected: [True]
+
+  # Plantri planar graphs with different connectivity targets.
+  - name: plantri
+    samples: 100
+    config:
+      plantri_connectivity: [3, 4]
+
+  # Delaunay triangulation with varying boundary shapes.
+  - name: delaunay
+    samples: 100
+    config:
+      delaunay_boundary: [circle, square]
+
+  # Lattice grid graphs.
+  - name: lattice_grid
+    samples: 1
+  # Optional: ERGM grid to mirror dataset diversity (reduce if slow).
+  - name: ergm
+    samples: 100
+    config:
+      ergm_edge_param: [-2.5, -2.0, -1.5]
+      ergm_triangle_param: [0.0, 0.1]
+      ergm_star_param: [0.0]
+
+# Whether to print verbose generator sampling diagnostics.
+verbose_generators: false
+require_planar: true
+
+# GraphGeneratorConfig overrides applied before running any generator.
+# Example:
+#   config_overrides:
+#     edge_probability: 0.05
+#     plantri_connectivity: 3
+config_overrides: {}

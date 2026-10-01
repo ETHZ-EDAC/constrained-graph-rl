@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "boltzmann-planar-graph"
+version = "0.1.0"
+description = "A Boltzmann Sampler for labelled planar graphs"
+readme = "README.md"
+requires-python = ">=3.6"
+license = {text = "BSD"}
+authors = [
+    {name = "Marta Grobelna", email = "marta.grobelna@rwth-aachen.de"},
+    {name = "Petre Petrov", email = "petrepp4@gmail.com"},
+    {name = "Rudi Floren", email = "rudi.floren@gmail.com"},
+    {name = "Tobias Winkler", email = "tobias.winkler1@rwth-aachen.de"},
+]
+dependencies = [
+    "networkx",
+    "matplotlib",
+    "scipy",
+    "pydot",
+    "pydot-ng",
+]
+
+[project.urls]
+Homepage = "https://github.com/towink/boltzmann-planar-graph"
+Repository = "https://github.com/towink/boltzmann-planar-graph"
+
+[tool.setuptools]
+packages = ["planar_graph_sampler", "pyboltzmann"]
+
+[tool.setuptools.package-data]
+planar_graph_sampler = ["**/*.py"]
+pyboltzmann = ["**/*.py"]

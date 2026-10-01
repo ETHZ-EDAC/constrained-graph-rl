@@ -1,0 +1,12 @@
+edge_length_min: 0.75
+edge_length_max: 2.5
+sector_eps: 20
+max_vertex_degree: 8
+boundary_edge_intersection: true
+
+# Alternative configuration (almost no constraint)
+#edge_length_min: 0.1
+#edge_length_max: 3.5
+#sector_eps: 1.
+#max_vertex_degree: 15
+#boundary_edge_intersection: true

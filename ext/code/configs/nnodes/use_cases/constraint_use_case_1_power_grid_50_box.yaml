@@ -1,0 +1,10 @@
+constraint: Num-Nodes-Box
+params:
+- 45.0
+- 55.0
+target_metrics:
+  num_nodes: 50
+  spectral_gap: 1.0
+  gini_coefficient: 0.1
+  isoperimetric_ratio: 1.0
+  clustering_coefficient: 0.2

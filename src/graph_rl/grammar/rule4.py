@@ -1,0 +1,147 @@
+"""Rule 4: Merging to right vertex expanding two other vertices."""
+
+# Standard library
+from typing import Dict, Tuple
+
+# Third-party
+import jax
+import jax.numpy as jnp
+
+from graph_rl.ops.angles import angles_from_actions_normalized
+
+# First-party
+from graph_rl.ops.expansion import deterministic_three_vertex_expansion, prepare_expansion
+from graph_rl.ops.marching import get_reference_vector
+from graph_rl.ops.sector_angle import get_sector_angles_fn, get_sector_violation
+from graph_rl.grammar.constants import Constants
+from graph_rl.utils import PARAMS
+from graph_rl.utils.adjacency_utils import get_edge_vectors, get_symmetric_adjacency, num_vertices
+
+
+@jax.jit
+def rule_4(
+    constants: Constants, params: Dict[str, jnp.ndarray], idx: jnp.ndarray
+) -> Tuple[Constants, Dict[str, jnp.ndarray], jnp.ndarray]:
+    """Connects the right edge to existing vertex and expands the second and third edge."""
+
+    cb_idx, reference_neighbor = prepare_expansion(constants, idx)
+    edge_len2 = jnp.linalg.norm(constants.vp[cb_idx[1]] - constants.vp[idx])
+
+    loss_feasibility = {
+        "cond2_topo": jnp.maximum(0, constants.adj[:, cb_idx[1]].sum(dtype=int) - (PARAMS.max_vertex_degree - 4)),
+        "cond4_topo": jnp.maximum(0, PARAMS.edge_length_min - edge_len2)
+        + jnp.maximum(0, edge_len2 - PARAMS.edge_length_max),
+    }
+
+    adj_b = constants.adj_b.at[idx].set(0)
+    adj_b = adj_b.at[:, idx].set(0)
+
+    adj = constants.adj.at[idx, cb_idx[1]].set(1)
+
+    cb_pos = constants.vp[cb_idx]
+    sectors, indices = get_sector_angles_fn(idx, reference_neighbor, adj, constants.vp)
+
+    ref_vector = constants.vp[idx] - constants.vp[reference_neighbor[0]]
+
+    num_inc = (adj[:, idx] > 0).sum()
+    a = sectors[num_inc - 1]
+
+    angles_raw = params["angles"]
+    bc, _ = angles_from_actions_normalized(angles_raw, sectors, sector_offset_for_left_connector=0)
+
+    lens_raw = params["lens"]
+    min_len = PARAMS.edge_length_min
+    max_len = PARAMS.edge_length_max
+    lens_23 = min_len + lens_raw * (max_len - min_len)
+
+    sectors = sectors.at[num_inc].set(-1)
+    d = 2 * jnp.pi - jnp.where(sectors >= 0, sectors, 0).sum() - bc.sum()  # Last angle to close the loop
+
+    sectors = sectors.at[jnp.array([num_inc - 1, num_inc, num_inc + 1, num_inc + 2])].set(
+        jnp.array([a, bc[0], bc[1], d])
+    )
+
+    lens_new = jnp.concatenate([edge_len2[None], lens_23], axis=0).T
+
+    edges_internal, _ = get_edge_vectors(adj + adj_b, constants.vp)
+
+    loss, _, vert_2, vert_3 = deterministic_three_vertex_expansion(
+        num_inc, sectors, lens_new, ref_vector, constants.vp[idx], edges_internal, cb_pos
+    )
+
+    # only 1st and 2nd is geometric, the rest are topological (unchangeable)
+    loss["edge_intersection_geom"] = loss["edge_intersection"][1:].sum()
+    loss["edge_intersection_topo"] = loss["edge_intersection"][0].sum()
+
+    loss.update(loss_feasibility)
+
+    # Penalize boundary edges created to the new vertices.
+    def _len_penalty(p, q):
+        dist = jnp.linalg.norm(p - q)
+        return jnp.maximum(0, min_len - dist) + jnp.maximum(0, dist - max_len)
+
+    new_vert_idx = num_vertices(adj)
+
+    adj_b = adj_b.at[cb_idx[1], new_vert_idx].set(1)
+    adj_b = adj_b.at[new_vert_idx, new_vert_idx + 1].set(1)
+    adj_b = adj_b.at[new_vert_idx + 1, cb_idx[0]].set(1)
+    adj_b = get_symmetric_adjacency(adj_b)
+
+    boundary_penalty = (
+        _len_penalty(constants.vp[cb_idx[1]], vert_2)
+        + _len_penalty(vert_2, vert_3)
+        + _len_penalty(vert_3, constants.vp[cb_idx[0]])
+    )
+    loss["boundary_edge_length_geom"] = boundary_penalty
+
+    adj_new = adj.at[idx, new_vert_idx].set(1)
+    adj_new = adj_new.at[idx, new_vert_idx + 1].set(1)
+
+    vp_flat_new = constants.vp.at[new_vert_idx].set(vert_2)
+    vp_flat_new = vp_flat_new.at[new_vert_idx + 1].set(vert_3)
+    sectors_new, neighbors = get_sector_angles_fn(idx, reference_neighbor, adj_new, vp_flat_new)
+
+    ref_neighbor_right = get_reference_vector(cb_idx[1], adj_new, vp_flat_new)
+    sec_right, neighbors_right = get_sector_angles_fn(cb_idx[1], ref_neighbor_right, adj_new, vp_flat_new)
+
+    sector_violation_new = get_sector_violation(sectors_new)
+    sector_violation_right = get_sector_violation(sec_right)
+    loss["sector_violation_geom"] = sector_violation_new
+    loss["sector_violation_topo"] = sector_violation_right
+
+    deg = (neighbors >= 0).sum().astype(jnp.int32)
+    deg_right = (neighbors_right >= 0).sum().astype(jnp.int32)
+    constants_new = constants.replace(
+        adj=adj_new,
+        adj_b=adj_b,
+        vp=vp_flat_new,
+        reference_neighbor=constants.reference_neighbor.at[jnp.concat((cb_idx[1][None], idx[None]))].set(
+            jnp.stack((ref_neighbor_right, reference_neighbor))
+        ),
+        sector_angles=constants.sector_angles.at[jnp.concatenate((idx[None], cb_idx[1][None]))].set(
+            jnp.stack(
+                (
+                    jnp.concatenate([deg[None], sectors_new]),
+                    jnp.concatenate([deg_right[None], sec_right]),
+                ),
+                axis=0,
+            )
+        ),
+        neighbors=constants.neighbors.at[jnp.concatenate((idx[None], cb_idx[1][None]))].set(
+            jnp.stack(
+                (
+                    jnp.concatenate([deg[None], neighbors]),
+                    jnp.concatenate([deg_right[None], neighbors_right]),
+                ),
+                axis=0,
+            )
+        ),
+    )
+
+    loss_full = jnp.array(0.0)
+    for loss_element in loss.values():
+        loss_full += loss_element.sum()
+
+    loss["full"] = loss_full
+
+    return constants_new, loss, cb_idx[1]

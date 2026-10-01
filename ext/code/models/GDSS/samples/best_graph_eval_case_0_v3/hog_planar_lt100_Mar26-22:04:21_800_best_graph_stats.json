@@ -1,0 +1,24 @@
+{
+  "targets": {
+    "num_nodes": 60.0,
+    "isoperimetric_ratio": 1.0,
+    "triangle_count": 40.0
+  },
+  "score": 0.26666666666666666,
+  "score_breakdown": {
+    "num_nodes": 0.21666666666666667,
+    "triangle_count": 0.05
+  },
+  "metrics": {
+    "num_nodes": 47.0,
+    "num_edges": 104.0,
+    "avg_degree": 4.425531914893617,
+    "spectral_gap": 0.27400905506000084,
+    "spectral_radius": 1.7148445894760012,
+    "clustering_coefficient": 0.2515985891455228,
+    "triangle_count": 38.0,
+    "gini_coefficient": 0.37459083469721777,
+    "planar_valid": 0.0,
+    "orbit_mass": 376.5531914893617
+  }
+}

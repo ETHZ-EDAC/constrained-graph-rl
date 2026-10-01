@@ -1,0 +1,221 @@
+[build-system]
+requires = ["uv_build>=0.9.11,<0.10.0"]
+build-backend = "uv_build"
+
+[project]
+name = "graph_rl"
+version = "1.0.0"
+description = "Constrained Goal-directed Planar Graph Generation with Grammar-based Reinforcement Learning"
+readme = "README.md"
+keywords = [
+    "Graph Generation, Reinforcement Learning, Grammars",
+]
+classifiers = [
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.10",
+]
+requires-python = ">=3.10,<3.13"
+authors = [
+    { name = "Nicolas Hochuli", email = "nhochuli@ethz.ch" },
+    { name = "Lorenzo Miele", email = "lmiele@ethz.ch" },
+]
+
+dependencies = [
+    # Core / ML
+    "torch",                   # Installed from the PyTorch CUDA 13 index (see [tool.uv] below)
+    "jax==0.6.2; sys_platform != 'linux'",
+    "jax[cuda12]==0.6.2; sys_platform == 'linux'",  # Keep JAX core/jaxlib/CUDA plugin on the same ABI
+    "optax",
+    "flax",
+    "scikit-learn",
+    "torch_geometric",
+    # Logging / utils / numerics
+    "tensorboard",
+    "networkx",
+    "coloredlogs",
+    "numpy<2",  # graph-tool requires NumPy 1.x
+    "matplotlib",
+    "mapbox-earcut",
+    "hydra-core>=1.3",
+    "scikit-learn",
+    # RL / envs
+    "gymnasium>=0.29",
+    # Git dependency
+    "logging_mod @ git+https://github.com/nicolas-git/logging_mod.git",
+    "torchinfo>=1.8.0",
+    "evosax>=0.2.0",
+    # Local dependency
+    "ipykernel",
+    "jupyter-core",
+    # prodigy dependencies
+    "easydict",
+    "pyemd",
+    "dill",
+    "pandas",
+    "rdkit",
+    "scipy",
+    "tqdm",
+    "pyyaml",
+    "wandb",
+    "pytorch_lightning",
+    "DiGress",
+    "overrides",
+    # GraphScoreMatching dependencies
+    "imageio",
+    "requests",
+    "msgpack",
+    "fcd-torch",
+    "setuptools>=68,<81",
+    "cycler",
+    "decorator",
+    "kiwisolver",
+    "nose",
+    "pyparsing",
+    "python-dateutil",
+    "six",
+    "termcolor",
+    # SPECTRE dependencies
+    "torch-householder",
+    "pygsp",
+    "torch-ema",
+    "boltzmann-planar-graph",
+    "alphashape>=1.3.1",
+]
+
+# ------------ uv-specific config -------------
+[tool.uv]
+# don't install ANY dependency-groups by default
+default-groups = []
+
+[tool.uv.sources]
+# Only pull CUDA wheels for torch when running on Linux
+torch = [
+    { index = "torch-cpu", marker = "platform_system == 'Darwin'"},
+    { index = "torch-gpu", marker = "platform_system == 'Linux'"},
+]
+DiGress = { path = "ext/DiGress/DiGress", editable = true }
+boltzmann-planar-graph = { path = "ext/boltzmann-planar-graph", editable = true }
+
+[[tool.uv.index]]
+name = "torch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-gpu"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+#[tool.uv.extra-build-dependencies]
+#torch-scatter = ["torch"]
+
+
+[dependency-groups]
+dev = [
+    "pre-commit",
+    "codespell",
+    "black",
+    "isort",
+    "pydocstyle",
+    "pylint",
+    "flake8",
+    "flake8-pyproject",
+    "mypy",
+    "pytest",
+    "pandas-stubs",
+    "scipy-stubs",
+]
+
+[tool.black]
+line_length=120
+
+[tool.isort]
+default_section = "THIRDPARTY"
+profile = "black"
+order_by_type = false
+multi_line_output = 3
+include_trailing_comma=true
+line_length=120
+# Headings
+import_heading_stdlib = "Standard library"
+import_heading_thirdparty = "Third-party"
+import_heading_firstparty = "First-party"
+import_heading_localfolder = "Local"
+# Known modules to avoid misclassification
+known_standard_library = [
+    # Add standard library modules that may be misclassified by isort
+]
+known_third_party = [
+    # Add third-party modules that may be misclassified by isort
+]
+known_first_party = [
+    # Add first-party modules that may be misclassified by isort
+]
+
+[tool.mypy]
+
+[[tool.mypy.overrides]]
+module = [
+    "networkx.*",
+    "torch_geometric.*",
+    "torch_geometric_temporal.*",
+    "mpl_toolkits.*",
+    "scipy.*",
+    "yaml",
+    "pytorch3d.*",
+    "matlab.*",
+    "open3d.*",
+    "mapbox_earcut.*",
+    "optax.*",
+]
+ignore_missing_imports = true
+
+[tool.flake8]
+max-line-length = 120
+ignore = [
+    "E203", # Allow whitespace before ':' (https://github.com/PyCQA/pycodestyle/issues/373)
+    "F811", # Allow redefinition of unused name (necessary for typing.overload)
+    "I002", # Don't check for isort configuration
+    "W503", # Allow line break before binary operator (PEP 8-compatible)
+]
+per-file-ignores = [
+    "__init__.py: F401",  # Allow unused imports
+]
+
+[tool.pylint]
+recursive = true
+ignore-imports = true
+max-line-length = 120
+disable = [
+    "C0115", # Missing class docstring
+    "C0116", # Missing function or method docstring
+    "R0903", # Too few public methods (*/2) (too-few-public-methods)
+    "R1705", # Unnecessary "elif" after "return" (no-else-return)
+    "R1720", # Unnecessary "elif" after "raise" (no-else-raise)
+    "R1724", # Unnecessary "elif" after "continue" (no-else-continue)
+    "W1116", # Second argument of isinstance is not a type (isinstance-second-argument-not-valid-type)
+    "W1203", # Use lazy % formatting in logging functions (logging-fstring-interpolation)
+    "W0511", # T O D O
+    "E1101", # Instance of 'Config' has no '...' member (no-member)
+    "E1102", # is not callable (not-callable)
+    "C0103", # Variable name doesn't conform to snake_case naming style (invalid-name)
+    "R0914", # Too many local variables (*/15) (too-many-locals)
+    "R0913", # Too many arguments (*/5) (too-many-arguments)
+    "R0917", # Too many positional arguments (*/5) (too-many-arguments)
+    "R0912", # Too many branches (23/12) (too-many-branches)
+    "R0915", # Too many statements (68/50) (too-many-statements)
+    "R0914", # Too many local variables (*/15) (too-many-locals)
+    "R0902", # Too many instance attributes (*/7) (too-many-instance-attributes)
+    "W1201", # Use lazy % formatting in logging functions (logging-not-lazy)
+    "C0209", # Formatting a regular string which could be an f-string (consider-using-f-string)
+    "W0212", # Access to a protected member _cache_size of a client class (protected-access)
+    "R0801", # Similar lines in 2 files (duplicate-code)
+]
+ignored-modules = []
+
+[tool.codespell]
+ignore-words-list = "inout"
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "INFO"

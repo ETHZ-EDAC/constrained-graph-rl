@@ -1,0 +1,18 @@
+# Delaunay reward variation check
+# Target metrics: default (num_nodes=60, isoperimetric_ratio=1.0, triangles=40)
+
+target_config: conf/target_metrics/default.yaml
+pt_pattern: ext/hog_planar/planar_graph.pt
+plot_dir: outputs/delaunay_check/seed_60025
+seed: 60025
+
+generators: [delaunay]
+
+generator_batches:
+  - name: delaunay
+    samples: 20
+    config:
+      delaunay_boundary: square
+
+verbose_generators: true
+config_overrides: {}

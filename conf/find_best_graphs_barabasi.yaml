@@ -1,0 +1,21 @@
+# Barabasi-Albert reward variation check
+# Target metrics: default (num_nodes=60, isoperimetric_ratio=1.0, triangles=40)
+
+target_config: conf/target_metrics/default.yaml
+pt_pattern: ext/hog_planar/hog_planar_graph.pt
+plot_dir: outputs/barabasi_check/seed_70062
+seed: 70062
+
+generators: [barabasi_albert]
+
+# Set to false for non-planar generators like barabasi_albert
+require_planar: false
+
+generator_batches:
+  - name: barabasi_albert
+    samples: 200
+    config:
+      num_attachments: [2, 3]
+
+verbose_generators: true
+config_overrides: {}

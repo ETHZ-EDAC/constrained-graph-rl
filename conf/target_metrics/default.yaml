@@ -1,0 +1,41 @@
+# Target metrics for metric-based reward optimization
+
+enabled: true  # Set to true to enable metric-based reward optimization
+metric_reward_weight: 1.0
+eval_baseline: false
+
+# These don't work at all or are redundant:
+#  node_uniformity: 0.8
+#  num_edges: setting a value here is dependent on node count and son on, so remove
+#  assortativity: 0.1 # does not work
+#  is_planar: 1.0 this one is useless since all are planar by design
+#  edge_length_uniformity: 0.1 # works but is redundant with edge_length_uniformity
+
+
+## USE CASE 1: Resilient Power Grid Network (Optimize Spectral Gap & Degree Equality)
+#metrics:
+#  num_nodes: 50
+#  spectral_gap: 1.0  # i.e. maximize spectral gap
+#  gini_coefficient: 0.1  # i.e. minimize gini
+#  isoperimetric_ratio: 1.0
+#  clustering_coefficient: 0.2
+
+# USE CASE 2: Urban Road Grid Design (Optimize Angular Resolution & Edge Length Uniformity)
+#metrics:
+# num_nodes: 80
+# angular_resolution: 0.8
+# edge_length_deviation: 0.7
+# gini_coefficient: 0.2
+# isoperimetric_ratio: 1.0
+
+# USE CASE 3: Connected Mesh
+#metrics:
+#   num_nodes: 100
+#   spectral_gap: 0.3
+#   rectangularity: 1.0
+
+# USE CASE 4: Triangles
+metrics:
+  num_nodes: 60
+  isoperimetric_ratio: 1.0
+  triangles: 40

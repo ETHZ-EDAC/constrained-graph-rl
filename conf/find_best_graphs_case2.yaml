@@ -1,0 +1,36 @@
+# Case 2: Only planar graph generators with embedding (Delaunay and Lattice Grid)
+# These generators produce graphs with explicit vertex positions.
+
+# Path to the target metrics definition consumed by load_target_metrics().
+target_config: conf/target_metrics/default.yaml
+
+# Glob for dataset .pt files searched by find_similar_graph_in_dataset().
+pt_pattern: ext/hog_planar/*.pt
+
+# Directory for best-graph plots.
+plot_dir: outputs/best_match_plots/case_2
+
+# Base random seed for generator sampling.
+seed: 42
+
+# Optional generator-name filter. Leave empty (or null) to include all generators
+# defined by the batch configuration.
+generators: []
+
+# Generator batch definitions for Case 2: only Delaunay and Lattice Grid
+generator_batches:
+  # Delaunay triangulation with varying boundary shapes.
+  - name: delaunay
+    samples: 10000
+    config:
+      delaunay_boundary: [circle, square]
+
+  # Lattice grid graphs.
+  - name: lattice_grid
+    samples: 2
+
+# Whether to print verbose generator sampling diagnostics.
+verbose_generators: false
+
+# GraphGeneratorConfig overrides applied before running any generator.
+config_overrides: {}

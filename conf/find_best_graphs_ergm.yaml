@@ -1,0 +1,33 @@
+# ERGM-only run configuration for scripts/find_best_graphs_for_targets.py
+# Point GRAPH_RL_FIND_BEST_CONFIG to this file to enable it.
+
+# Path to the target metrics definition consumed by load_target_metrics().
+target_config: conf/target_metrics/default.yaml
+
+# Glob for dataset .pt files searched by find_similar_graph_in_dataset().
+pt_pattern: ext/hog_planar/*.pt
+
+# Directory for best-graph plots. Set to null to disable plotting.
+plot_dir: outputs/best_match_plots/ergm_only
+
+# Base random seed for generator sampling.
+seed: 42
+
+# Optional generator-name filter. Leave empty (or null) to include all generators
+# defined by the batch configuration.
+generators: []
+
+# Generator batch definitions. Only ERGM is enabled here.
+generator_batches:
+  - name: ergm
+    samples: 100
+    config:
+      ergm_edge_param: [-2.5, -2.0, -1.5, -1.0]
+      ergm_triangle_param: [0.0, 0.1, 0.2]
+      ergm_star_param: [0.0]
+
+# Whether to print verbose generator sampling diagnostics.
+verbose_generators: false
+
+# GraphGeneratorConfig overrides applied before running any generator.
+config_overrides: {}

@@ -1,0 +1,28 @@
+{
+  "targets": {
+    "num_nodes": 50.0,
+    "spectral_gap": 1.0,
+    "gini_coefficient": 0.1,
+    "isoperimetric_ratio": 1.0,
+    "clustering_coefficient": 0.2
+  },
+  "score": 1.2623602180518334,
+  "score_breakdown": {
+    "num_nodes": 0.86,
+    "spectral_gap": 0.31578013147174633,
+    "gini_coefficient": 0.03896103896103925,
+    "clustering_coefficient": 0.04761904761904773
+  },
+  "metrics": {
+    "num_nodes": 7.0,
+    "num_edges": 11.0,
+    "avg_degree": 3.142857142857143,
+    "spectral_gap": 0.6842198685282537,
+    "spectral_radius": 1.8069632769761874,
+    "clustering_coefficient": 0.19047619047619047,
+    "triangle_count": 2.0,
+    "gini_coefficient": 0.10389610389610393,
+    "planar_valid": 0.0,
+    "orbit_mass": 28.142857142857142
+  }
+}

@@ -1,0 +1,28 @@
+defaults:
+  - constraints: default
+  - policy: ppo
+  - target_metrics: default
+  - override hydra/job_logging: disabled
+  - _self_
+
+hydra:
+  run:
+    dir: ${ifelse:${job.use_name_for_output_dir},outputs/${now:%Y-%m-%d}/${job.name},outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}}
+  job:
+    env_set: # environment variables to set before running the job
+      XLA_PYTHON_CLIENT_PREALLOCATE: false  # disable/enable JAX GPU memory preallocation
+      JAX_PLATFORM_NAME: cpu  # use platform cpu / gpu
+
+remote: false  # If accessing remotely (e.g. on a cluster)
+jax_enable_x64: false  # If activating double vs. single precision
+jax_debug_nans: false  # If activating NaN debugging
+
+# run python main.py job.use_name_for_output_dir=false to revert to Hydra’s timestamped output directory structure.
+job:
+  disable_grammar_logs: true
+  use_name_for_output_dir: false  # if true → use job.name for output dir; if false → use timestamp
+  name: test
+  logging:
+    verbosity_console: 3
+    verbosity_logfile: 2
+    overwrite_job_dir: true

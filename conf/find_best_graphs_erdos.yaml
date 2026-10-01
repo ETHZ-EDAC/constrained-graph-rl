@@ -1,0 +1,19 @@
+# Erdős-Rényi G(n,p) reward variation check
+# Target metrics: default (num_nodes=60, isoperimetric_ratio=1.0, triangles=40)
+
+target_config: conf/target_metrics/default.yaml
+pt_pattern: ext/hog_planar/planar_graph.pt
+plot_dir: outputs/erdos_check/seed_120
+seed: 120
+
+generators: [erdos_renyi_gnp]
+
+generator_batches:
+  - name: erdos_renyi_gnp
+    samples: 20
+    config:
+      edge_probability: [0.04]
+      ensure_connected: [true]
+
+verbose_generators: true
+config_overrides: {}

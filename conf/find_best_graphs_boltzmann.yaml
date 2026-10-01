@@ -1,0 +1,17 @@
+# Boltzmann-only reward variation check
+# Target metrics: reuse default (num_nodes=60, isoperimetric_ratio=1.0, triangles=40)
+
+target_config: conf/target_metrics/default.yaml
+pt_pattern: ext/hog_planar/planar_graph.pt
+plot_dir: outputs/boltzmann_check/seed_54
+seed: 54
+
+generators: [boltzmann_planar]
+
+generator_batches:
+  - name: boltzmann_planar
+    samples: 3
+    config: {}
+
+verbose_generators: true
+config_overrides: {}

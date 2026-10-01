@@ -1,0 +1,16 @@
+# Plantri-only seed variability check (seed A)
+target_config: conf/target_metrics/default.yaml
+pt_pattern: ext/hog_planar/planar_graph.pt
+plot_dir: outputs/plantri_seed_check/seed_111
+seed: 2
+generators: [plantri]
+generator_batches:
+  - name: plantri
+    samples: 5000
+    config:
+      plantri_connectivity: [3,4]
+      plantri_generate_single: [false]
+      plantri_max_graphs: [20]
+verbose_generators: true
+collect_sample_rewards: true
+config_overrides: {}
