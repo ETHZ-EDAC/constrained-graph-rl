@@ -9,9 +9,6 @@ import jax.numpy as jnp
 from jax import jit
 
 # First-party
-from graph_rl.utils import PARAMS
-
-
 
 
 @jax.jit
@@ -74,8 +71,6 @@ def get_degree_vector(adjacency: jnp.ndarray) -> jnp.ndarray:
     return jnp.sum(adj_sym, axis=0)
 
 
-
-
 @jax.jit
 def get_edge_vectors(adj: jnp.ndarray, pos: jnp.ndarray) -> Tuple[jnp.ndarray, jnp.ndarray]:
     """
@@ -110,10 +105,6 @@ def get_edge_vectors(adj: jnp.ndarray, pos: jnp.ndarray) -> Tuple[jnp.ndarray, j
     # Stack into (E_max, 2, 2)
     edge_vecs = jnp.stack([p_i, p_j], axis=1)
     return edge_vecs, num_edges
-
-
-
-
 
 
 @jit

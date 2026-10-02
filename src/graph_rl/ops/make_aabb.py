@@ -325,26 +325,26 @@ def extend_leaf_vertices_to_aabb(
 
     # Rays from leaf toward (leaf - neighbor), intersect with AABB
     nbr = jnp.argmax(A, axis=1).astype(jnp.int32)
-    O = V[:, :2]
+    ray_origins = V[:, :2]
     U = V[nbr, :2]
-    d = O - U
+    d = ray_origins - U
     dn = jnp.linalg.norm(d, axis=1, keepdims=True)
     d_unit = d / jnp.maximum(dn, 1e-12)
 
     def safe_div(a, b):
         return jnp.where(jnp.abs(b) <= tol, jnp.sign(a) * jnp.inf, a / b)
 
-    tx1 = safe_div(min_x - O[:, 0], d_unit[:, 0])
-    tx2 = safe_div(max_x - O[:, 0], d_unit[:, 0])
-    ty1 = safe_div(min_y - O[:, 1], d_unit[:, 1])
-    ty2 = safe_div(max_y - O[:, 1], d_unit[:, 1])
+    tx1 = safe_div(min_x - ray_origins[:, 0], d_unit[:, 0])
+    tx2 = safe_div(max_x - ray_origins[:, 0], d_unit[:, 0])
+    ty1 = safe_div(min_y - ray_origins[:, 1], d_unit[:, 1])
+    ty2 = safe_div(max_y - ray_origins[:, 1], d_unit[:, 1])
 
     def ok_x(t):
-        y = O[:, 1] + t * d_unit[:, 1]
+        y = ray_origins[:, 1] + t * d_unit[:, 1]
         return (t >= -tol) & (y >= min_y - tol) & (y <= max_y + tol)
 
     def ok_y(t):
-        x = O[:, 0] + t * d_unit[:, 0]
+        x = ray_origins[:, 0] + t * d_unit[:, 0]
         return (t >= -tol) & (x >= min_x - tol) & (x <= max_x + tol)
 
     big = jnp.array(1e30, V.dtype)
@@ -358,7 +358,7 @@ def extend_leaf_vertices_to_aabb(
         axis=1,
     )
     t = jnp.min(C, axis=1)
-    P = O + t[:, None] * d_unit
+    P = ray_origins + t[:, None] * d_unit
 
     # Snap numerically to sides
     Px = jnp.where(jnp.abs(P[:, 0] - min_x) <= tol, min_x, P[:, 0])

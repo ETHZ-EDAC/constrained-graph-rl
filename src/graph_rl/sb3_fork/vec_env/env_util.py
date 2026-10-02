@@ -1,5 +1,4 @@
 # Standard library
-import os
 from pathlib import Path
 from typing import Any, Callable, Optional, Union
 
@@ -62,13 +61,13 @@ def make_vec_env(
 
 def make_rule1_env(job_dir: Path, cfg: DictConfig, env_name=None) -> Monitor:
     env_meta = cfg.policy.env
-    
+
     # Prepare target metrics if enabled
     target_metrics_cfg = cfg.target_metrics
-    enabled = target_metrics_cfg.enabled 
+    enabled = target_metrics_cfg.enabled
     target_metrics = target_metrics_cfg.get("metrics") if enabled else None
     metric_reward_weight = target_metrics_cfg.get("metric_reward_weight", 0.0) if enabled else 0.0
-    
+
     base_env = PlanarGraphEnv(
         job_dir=job_dir,
         **env_meta,

@@ -3,13 +3,11 @@
 from __future__ import annotations
 
 # Standard library
-import argparse
 import os
 
 os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
 os.environ["JAX_PLATFORM_NAME"] = "cpu"
 import warnings
-from functools import partial
 from pathlib import Path
 
 # Third-party

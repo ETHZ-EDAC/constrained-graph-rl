@@ -1,5 +1,5 @@
 # Standard library
-from typing import Generator, Optional, Union
+from typing import Generator, Optional
 
 # Third-party
 import numpy as np

@@ -10,14 +10,12 @@ import jax.numpy as jnp
 from graph_rl.ops.angles import angles_from_actions_normalized
 
 # First-party
-from graph_rl.ops.edge_intersections import edges_vs_edge_batch_intersection_loss
 from graph_rl.ops.expansion import prepare_expansion, deterministic_two_vertex_expansion
 from graph_rl.ops.marching import get_reference_vector
 from graph_rl.ops.sector_angle import get_sector_angles_fn, get_sector_violation
 from graph_rl.grammar.constants import Constants
 from graph_rl.utils import PARAMS
 from graph_rl.utils.adjacency_utils import get_edge_vectors, get_symmetric_adjacency, num_vertices
-from graph_rl.utils.math_utils import get_rotz
 
 
 @jax.jit

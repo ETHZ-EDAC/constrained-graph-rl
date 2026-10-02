@@ -2,14 +2,12 @@
 import torch
 import torch as th
 from torch import nn
-from torch.nn import Embedding, ModuleList
+from torch.nn import Embedding
 from torch_geometric.data import Batch
 from torch_geometric.nn import (
     AttentionalAggregation,
     LayerNorm,
     MessagePassing,
-    global_add_pool,
-    global_max_pool,
     global_mean_pool,
 )
 
@@ -184,8 +182,8 @@ class GraphSizeAwareJK(nn.Module):
         gate_weights = torch.softmax(gate_scores, dim=0)  # sum over layers -> 1 per graph
 
         fused = torch.zeros_like(layer_outputs[0])
-        for l, h in enumerate(layer_outputs):
-            fused = fused + gate_weights[l][batch].unsqueeze(-1) * h
+        for layer_index, h in enumerate(layer_outputs):
+            fused = fused + gate_weights[layer_index][batch].unsqueeze(-1) * h
 
         return fused, gate_weights
 

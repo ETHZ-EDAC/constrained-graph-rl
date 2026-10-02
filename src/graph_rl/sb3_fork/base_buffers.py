@@ -1,7 +1,7 @@
 # Standard library
 from abc import ABC, abstractmethod
 from collections.abc import Generator
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 # Third-party
 import numpy as np

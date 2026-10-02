@@ -362,9 +362,7 @@ def compute_metric_similarity(
         candidate_val = candidate_metrics[metric_name]
 
         if not (np.isfinite(target_val) and np.isfinite(candidate_val)):
-            raise ValueError(
-                f"Non-finite metric '{metric_name}': target={target_val}, candidate={candidate_val}"
-            )
+            raise ValueError(f"Non-finite metric '{metric_name}': target={target_val}, candidate={candidate_val}")
 
         rel_diff = compute_relative_difference(target_val, candidate_val)
         differences[metric_name] = rel_diff
@@ -516,7 +514,9 @@ def find_best_from_generators(
                         "status": "fallback",
                         "constraint_report": constraint_report,
                         "reward": float(reward),
-                        "candidate_metrics": {k: float(v) for k, v in cand_metrics.items() if isinstance(v, (int, float))},
+                        "candidate_metrics": {
+                            k: float(v) for k, v in cand_metrics.items() if isinstance(v, (int, float))
+                        },
                         "differences": {k: float(v) for k, v in diffs.items()},
                         "sample_index": int(i),
                         "seed": int(sample_seed),
@@ -532,7 +532,9 @@ def find_best_from_generators(
                         entry["best_valid_reward"] = float(reward)
                         entry["best_valid_seed"] = int(sample_seed)
                         entry["best_valid_sample_index"] = int(i)
-                        entry["best_valid_candidate_metrics"] = {k: float(v) for k, v in cand_metrics.items() if isinstance(v, (int, float))}
+                        entry["best_valid_candidate_metrics"] = {
+                            k: float(v) for k, v in cand_metrics.items() if isinstance(v, (int, float))
+                        }
                         entry["best_valid_differences"] = {k: float(v) for k, v in diffs.items()}
                         entry["best_valid_constraint_report"] = constraint_report
                 if entry["sample_index"] is None or _entry_rank(candidate_entry) > _entry_rank(entry):
@@ -542,7 +544,9 @@ def find_best_from_generators(
                             "sample_index": int(i),
                             "seed": int(sample_seed),
                             "differences": {k: float(v) for k, v in diffs.items()},
-                            "candidate_metrics": {k: float(v) for k, v in cand_metrics.items() if isinstance(v, (int, float))},
+                            "candidate_metrics": {
+                                k: float(v) for k, v in cand_metrics.items() if isinstance(v, (int, float))
+                            },
                             "constraint_report": constraint_report,
                             "planarity": True,
                             "planarity_score": float(planarity_score),
@@ -557,7 +561,9 @@ def find_best_from_generators(
                             "seed": int(sample_seed),
                             "reward": float(reward),
                             "differences": {k: float(v) for k, v in diffs.items()},
-                            "candidate_metrics": {k: float(v) for k, v in cand_metrics.items() if isinstance(v, (int, float))},
+                            "candidate_metrics": {
+                                k: float(v) for k, v in cand_metrics.items() if isinstance(v, (int, float))
+                            },
                             "constraint_report": constraint_report,
                             "planarity": True,
                             "planarity_score": float(planarity_score),
@@ -671,9 +677,7 @@ def run_generator_batches(
             cfg = replace(base_config)
             for key, value in combo.items():
                 if not hasattr(cfg, key):
-                    raise ValueError(
-                        f"Unknown GraphGeneratorConfig attribute '{key}' in batch '{name}'"
-                    )
+                    raise ValueError(f"Unknown GraphGeneratorConfig attribute '{key}' in batch '{name}'")
                 if value is None:
                     continue
                 setattr(cfg, key, value)
@@ -927,7 +931,7 @@ def print_similarity_results(
     print(f"  Graph: {graph_data.num_nodes} nodes, {graph_data.num_edges} edges")
 
     if show_details and differences:
-        print(f"\n  Individual Metric Differences:")
+        print("\n  Individual Metric Differences:")
         for metric_name in sorted(differences.keys()):
             diff = differences[metric_name]
             print(f"    {metric_name:28s}: {diff:.6f}")
@@ -978,12 +982,7 @@ def evaluate_baseline_from_dataset(
 
     # Plot and save baseline graph (with fancy PNG+PDF saving)
     fig, ax = plot_graph(
-        adj.numpy(), 
-        baseline_graph.pos.numpy(),
-        pretty=True,
-        save_path=save_path,
-        save_dpi=300,
-        save_pdf=True
+        adj.numpy(), baseline_graph.pos.numpy(), pretty=True, save_path=save_path, save_dpi=300, save_pdf=True
     )
     ax.set_title(f"Baseline Graph: {dataset_name} (graph {graph_idx})\nSimilarity: {score:.6f}")
     fig.savefig(save_path, dpi=300, bbox_inches="tight")
@@ -993,7 +992,7 @@ def evaluate_baseline_from_dataset(
 
     print(f"\n✓ Best baseline: {dataset_name} (graph {graph_idx})")
     print(f"  Similarity: {score:.6f} (1.0 = perfect match)")
-    print(f"  Baseline graph saved to:")
+    print("  Baseline graph saved to:")
     print(f"    PNG: {save_path}")
     print(f"    PDF: {pdf_path}")
     print(f"    PNG (no axes): {save_path.with_name(f'{save_path.stem}_no_axes.png')}")
@@ -1099,10 +1098,7 @@ def evaluate_all_generators_with_metrics(
                 verbose=False,
             )
             best_matches[gen_name] = best_info
-            print(
-                "    best reward vs target="
-                f"{float(best_info.get('reward', float('nan'))):.6f}"
-            )
+            print(f"    best reward vs target={float(best_info.get('reward', float('nan'))):.6f}")
 
     return results, best_matches
 
@@ -1186,7 +1182,9 @@ def run_comprehensive_benchmark(
         config = GraphGeneratorConfig(**base_config, edge_probability=p)
         print(f"  - p={p:.2f}...")
         results, best = evaluate_all_generators_with_metrics(
-            config=config, num_samples=num_samples, include_graphs=["erdos_renyi_gnp"],
+            config=config,
+            num_samples=num_samples,
+            include_graphs=["erdos_renyi_gnp"],
             target_metrics=target_metrics,
             metric_reward_weight=metric_reward_weight,
             search_seed=seed,
@@ -1231,7 +1229,9 @@ def run_comprehensive_benchmark(
         config = GraphGeneratorConfig(**base_config, num_attachments=m)
         print(f"  - m={m}...")
         results, best = evaluate_all_generators_with_metrics(
-            config=config, num_samples=num_samples, include_graphs=["barabasi_albert"],
+            config=config,
+            num_samples=num_samples,
+            include_graphs=["barabasi_albert"],
             target_metrics=target_metrics,
             metric_reward_weight=metric_reward_weight,
             search_seed=seed,
@@ -1371,9 +1371,7 @@ def run_comprehensive_benchmark(
         print("\nBest-match rewards (higher is better):")
         for name, info in sorted(all_best_matches.items()):
             reward = info.get("reward", float("nan"))
-            print(
-                f"  {name:30s}: reward={float(reward):.6f} generator={info.get('generator_name')}"
-            )
+            print(f"  {name:30s}: reward={float(reward):.6f} generator={info.get('generator_name')}")
 
     print("\n" + "=" * 80)
     print(f"Benchmark complete! Results in: {output_path}")

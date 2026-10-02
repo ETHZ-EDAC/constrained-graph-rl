@@ -1,7 +1,6 @@
 # Standard library
-import math
 from collections import deque
-from typing import List, Literal, Optional, Tuple
+from typing import Optional, Tuple
 
 # Third-party
 import torch as th
@@ -224,9 +223,9 @@ class HybridDistribution(nn.Module):
         Expected actions format: [ cat_idx_0_based , cont_0 , cont_1 , ... ]
         """
         assert self.rule_dist is not None or self.joint_dist is not None, "call proba_distribution(...) first"
-        assert (
-            self._means_conditional is not None and self._log_stds_conditional is not None
-        ), "call proba_distribution(...) first"
+        assert self._means_conditional is not None and self._log_stds_conditional is not None, (
+            "call proba_distribution(...) first"
+        )
 
         node_raw = actions[:, 0].long()  # [B]
         cat_raw = actions[:, 1]  # [B]
@@ -263,9 +262,9 @@ class HybridDistribution(nn.Module):
         Expected actions format: [ cat_idx_0_based , cont_0 , cont_1 , ... ]
         """
         assert self.rule_dist is not None or self.joint_dist is not None, "call proba_distribution(...) first"
-        assert (
-            self._means_conditional is not None and self._log_stds_conditional is not None
-        ), "call proba_distribution(...) first"
+        assert self._means_conditional is not None and self._log_stds_conditional is not None, (
+            "call proba_distribution(...) first"
+        )
 
         cat_raw = actions[:, 1]  # [B]
         cont = actions[:, 2:]  # [B, D]

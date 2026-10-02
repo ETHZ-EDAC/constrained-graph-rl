@@ -6,7 +6,6 @@ from __future__ import annotations
 import time
 import typing
 from dataclasses import dataclass
-from collections import deque
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
@@ -16,18 +15,16 @@ import jax
 import jax.numpy as jnp
 import jax.random
 import numpy as np
-import torch
 import torch as th
 from gymnasium import spaces
 from logging_mod.logger import get_logger
-from torch.distributions import Categorical
 from torch_geometric.data import Data
 from torch_geometric.utils import to_undirected
 
 from graph_rl.ops.cma_es import apply_cmaes_to_rule
 
 # First-party
-from graph_rl.ops.make_aabb import active_mask_from_adjacency, best_oriented_square_rectangularity
+from graph_rl.ops.make_aabb import best_oriented_square_rectangularity
 from graph_rl.grammar.constants import Constants
 from graph_rl.grammar.planargraph import PlanarGraph
 import graph_rl.grammar as grammar
@@ -68,8 +65,6 @@ def _block_tree_until_ready(tree: typing.Any) -> typing.Any:
     return jax.tree_util.tree_map(
         lambda leaf: leaf.block_until_ready() if hasattr(leaf, "block_until_ready") else leaf, tree
     )
-
-
 
 
 def get_masked_action_dim(n_classes, cont_dim_mask) -> th.Tensor:
@@ -170,8 +165,6 @@ class PlanarGraphEnv(gym.Env):
     def reset(self, *, seed: Optional[int] = None, options: Optional[Dict] = None):
         super().reset(seed=seed, options=options)
         self.cp.reset_graph()
-
-
 
         self._step_id = 0
         self._applied_steps = 0

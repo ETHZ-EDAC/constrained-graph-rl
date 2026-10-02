@@ -9,13 +9,11 @@ from logging_mod.logger import get_logger
 from omegaconf import DictConfig
 
 # First-party
-from graph_rl.ppo.actor_critic_policy import ActorCriticPolicy
 from graph_rl.ppo.evaluation import evaluate_policy
-from graph_rl.ppo.graph_rollout_buffer import GraphRolloutBuffer
 from graph_rl.ppo.layers import GraphFeatureExtractor
 from graph_rl.ppo.ppo import PPO
 from graph_rl.sb3_fork.common.utils_saving import load_from_zip_file
-from graph_rl.sb3_fork.vec_env import SequentialVecEnv, SubprocVecEnv
+from graph_rl.sb3_fork.vec_env import SequentialVecEnv
 from graph_rl.sb3_fork.vec_env.env_util import make_rule1_env, make_vec_env
 from graph_rl.utils import PARAMS, set_grammar_constraints
 

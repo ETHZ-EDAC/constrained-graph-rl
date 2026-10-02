@@ -79,7 +79,6 @@ class PlanarGraph:
             root_vertices=self.constants.root_vertices.at[0].set(0),
         )
 
-
     def rule_1(
         self, params: Dict, idx: Optional[jnp.ndarray] = None, apply_rule=True
     ) -> tuple[Dict[str, jnp.ndarray], Optional[jnp.ndarray], Constants]:
@@ -152,7 +151,6 @@ class PlanarGraph:
             logger.debug("Current cache count of rule_4: %d" % (rule_4._cache_size()))
         return logs, cb_idx, const_new
 
-
     def rule_5(
         self, params: Dict, idx: Optional[jnp.ndarray] = None, apply_rule=True
     ) -> tuple[Dict[str, jnp.ndarray], Optional[jnp.ndarray], Constants]:
@@ -204,8 +202,6 @@ class PlanarGraph:
         if hasattr(rule_7_fn, "_cache_size"):
             logger.debug("Current cache count of rule_7: %d" % (rule_7_fn._cache_size()))
         return logs, cb_idx, const_new
-
-
 
     def update_sector_angles(self):
         """Update sector angles for all vertices in the graph."""

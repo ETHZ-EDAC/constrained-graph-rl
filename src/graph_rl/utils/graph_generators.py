@@ -160,7 +160,7 @@ def generate_lattice_grid(
         cols = int(np.sqrt(num_nodes))
         rows = (num_nodes + cols - 1) // cols
 
-    actual_nodes = rows * cols
+    rows * cols
 
     # Generate grid graph
     graph = nx.grid_2d_graph(rows, cols)
@@ -235,7 +235,7 @@ def generate_planar_erdos_renyi(
     It doesn't waste time caclulating layouts for non-planar graphs.
     """
     set_seed(seed)
-    rng = np.random.RandomState(seed)
+    np.random.RandomState(seed)
 
     for attempt in range(max_attempts):
         current_seed = None if seed is None else seed + attempt
@@ -791,7 +791,7 @@ def generate_plantri_graph(
 
             # SIGPIPE causes exit code 141 when head closes the pipe
             if result.returncode not in (0, 141):
-                raise RuntimeError(f"Plantri failed with return code {result.returncode}: " f"{result.stderr.decode()}")
+                raise RuntimeError(f"Plantri failed with return code {result.returncode}: {result.stderr.decode()}")
         else:
             # For multiple graphs: generate all (slow)
             result = subprocess.run(
@@ -801,15 +801,13 @@ def generate_plantri_graph(
                 timeout=30,  # 30 second timeout
             )
             if result.returncode != 0:
-                raise RuntimeError(f"Plantri failed with return code {result.returncode}: " f"{result.stderr.decode()}")
+                raise RuntimeError(f"Plantri failed with return code {result.returncode}: {result.stderr.decode()}")
     except subprocess.TimeoutExpired:
         raise RuntimeError(
-            f"Plantri timed out for {num_nodes} nodes. " f"Try reducing num_nodes or use a different generator."
+            f"Plantri timed out for {num_nodes} nodes. Try reducing num_nodes or use a different generator."
         )
     except FileNotFoundError:
-        raise RuntimeError(
-            f"Plantri executable not found in {plantri_dir}. " f"Compile it first: cd {plantri_dir} && make"
-        )
+        raise RuntimeError(f"Plantri executable not found in {plantri_dir}. Compile it first: cd {plantri_dir} && make")
 
     # Parse output
     max_graphs_to_parse = 1 if generate_single else max_graphs

@@ -3,7 +3,7 @@ import logging
 import os
 from abc import ABC
 from pathlib import Path
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 # Third-party
 import numpy as np
@@ -19,9 +19,11 @@ from graph_rl.ppo.metrics import (
     save_metric_history_figures,
     aggregate_metric_history,
     compute_metrics_from_data,
-    extract_metric_entry,
 )
 from graph_rl.utils.benchmark_graphs import compute_metric_similarity
+
+if TYPE_CHECKING:
+    from graph_rl.sb3_fork.base_optim import BaseOptim
 
 
 class BaseCallback(ABC):
@@ -33,7 +35,7 @@ class BaseCallback(ABC):
 
     # The RL model
     # Type hint as string to avoid circular import
-    model: "base_class.BaseOptim"
+    model: "BaseOptim"
 
     def __init__(self, save_path: Optional[Path] = None, verbose: int = 0):
         super().__init__()
@@ -55,7 +57,7 @@ class BaseCallback(ABC):
         return self.model.ppo_logger
 
     # Type hint as string to avoid circular import
-    def init_callback(self, model: "base_class.BaseOptim") -> None:
+    def init_callback(self, model: "BaseOptim") -> None:
         """
         Initialize the callback by saving references to the
         RL model and the training environment for convenience.
@@ -306,7 +308,6 @@ class EvalCallback(BaseCallback):
         continue_training = True
 
         if self.eval_freq > 0 and self.n_iterations % self.eval_freq == 0:
-
             self.std_logger.info(" --- Validation ---")
 
             episode_rewards, episode_lengths = evaluate_policy(
@@ -332,8 +333,7 @@ class EvalCallback(BaseCallback):
 
             if self.verbose >= 1:
                 self.std_logger.info(
-                    f"Eval num_timesteps={self.num_timesteps}, "
-                    f"episode_reward={mean_reward:.2f} +/- {std_reward:.2f}"
+                    f"Eval num_timesteps={self.num_timesteps}, episode_reward={mean_reward:.2f} +/- {std_reward:.2f}"
                 )
                 self.std_logger.info(f"Episode length: {mean_ep_length:.2f} +/- {std_ep_length:.2f}")
             # Add to current PPOLogger
@@ -363,9 +363,9 @@ class EvalCallback(BaseCallback):
             )
             X_2d = pca.fit_transform(node_features)  # X.shape = (N, feature_dim)
             fig, ax = plt.subplots()
-            sc = ax.scatter(X_2d[:, 0], X_2d[:, 1], c="blue", s=8)
+            ax.scatter(X_2d[:, 0], X_2d[:, 1], c="blue", s=8)
             ax.set_title("UMAP projection")
-            plt.savefig(path / f"feature_pca.png")
+            plt.savefig(path / "feature_pca.png")
             plt.close(fig)
 
             fig, axes = plt.subplots(4, 5, figsize=(20, 12))
@@ -377,7 +377,7 @@ class EvalCallback(BaseCallback):
                 ax.set_title(f"Index {i}")
 
             plt.tight_layout()
-            plt.savefig(path / f"feature_distribution.png")
+            plt.savefig(path / "feature_distribution.png")
             plt.close(fig)
 
         metrics_buffer = self.locals.get("metrics_buffer")
@@ -472,7 +472,7 @@ class FullMetricCallback(BaseCallback):
                         # if metric_name in baseline_metrics and metric_name in last_metrics:
                         if metric_name in aggregated_metrics:
                             self.logger.record(f"baseline/{metric_name}", baseline_metrics[metric_name])
-                            rollout_mean = float(aggregated_metrics[metric_name].mean())
+                            float(aggregated_metrics[metric_name].mean())
                             target_val = self.target_metrics[metric_name]
                             self.logger.record(f"target/target_{metric_name}", target_val)
 
@@ -507,9 +507,9 @@ class StopTrainingOnNoModelImprovement(BaseCallback):
         self.no_improvement_evals = 0
 
     def _on_step(self) -> bool:
-        assert (
-            self.parent is not None
-        ), "``StopTrainingOnNoModelImprovement`` callback must be used with an ``EvalCallback``"
+        assert self.parent is not None, (
+            "``StopTrainingOnNoModelImprovement`` callback must be used with an ``EvalCallback``"
+        )
 
         continue_training = True
 

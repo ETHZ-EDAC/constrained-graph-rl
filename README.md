@@ -71,7 +71,7 @@ $$
 Here, $\kappa_m^\star$ is the target value, $\kappa_m(G)$ is the measured graph metric, and $\epsilon>0$ ensures numerical stability.
 A reward of one corresponds to matching all targets, while feasibility is enforced separately during construction.
 
-## Scalability
+### Scalability
 
 The scalability study evaluates graphs with 30 to 150 nodes under tight and loose constraint sets.
 Expected return decreases with graph size, with a larger drop under tighter constraints.
@@ -131,5 +131,3 @@ year={2026},
 url={https://openreview.net/forum?id=9Sh3SI4EF1}
 }
 ```
-
-## License

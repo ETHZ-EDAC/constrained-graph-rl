@@ -21,23 +21,22 @@ Planar Graph Metrics:
 
 from __future__ import annotations
 from pathlib import Path
-from typing import Dict, List, cast, Iterable
+from typing import Dict, List, cast
 from collections import defaultdict
 import math
 
-import jax
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
 from torch import Tensor
-from torch_geometric.data import Batch, Data
+from torch_geometric.data import Data
 from torch_geometric.nn.functional import gini
 from torch_geometric.utils import assortativity, dense_to_sparse, to_dense_adj
 import networkx as nx
 
 import jax.numpy as jnp
 
-from graph_rl.ops.make_aabb import add_aabb_rectangle, best_oriented_square_rectangularity
+from graph_rl.ops.make_aabb import best_oriented_square_rectangularity
 from graph_rl.ops.polygon_area_perim import polygon_area_perimeter_from_boundary
 from graph_rl.ppo.planar_geometry import minimum_angle_from_sector_angles, maximum_degree_from_adjacency
 from graph_rl.utils.adjacency_utils import get_edge_vectors
@@ -62,10 +61,6 @@ def _to_tensor(array, *, dtype: torch.dtype = torch.float64) -> Tensor:
         return torch.as_tensor(array, dtype=dtype)
     except Exception:
         return torch.tensor(array, dtype=dtype)
-
-
-
-
 
 
 class GraphMetrics:
@@ -188,7 +183,6 @@ class GraphMetrics:
         if triplets <= self.eps:
             return 0.0
         return (3.0 * triangles) / triplets
-
 
     def _gini_from_degrees(self, adjacency_matrix: Tensor) -> float:
         """Compute the Gini coefficient for a vector of degrees using PyG."""
@@ -363,7 +357,6 @@ class PlanarGraphMetrics:
         relative_deviation = (lengths - mean_length) / mean_length
         uniformity = torch.sqrt(torch.mean(relative_deviation**2))
         return float(uniformity.item())
-
 
     def edge_length_deviation(self, adjacency_matrix, vertex_positions) -> float:
         """Edge length deviation (Eq. 4) from Mooney et al. (2020)."""

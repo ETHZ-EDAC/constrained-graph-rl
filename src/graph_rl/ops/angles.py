@@ -6,7 +6,9 @@ import jax.numpy as jnp
 from graph_rl.utils import PARAMS
 
 
-def angles_from_actions_normalized(raw: jnp.ndarray, sectors: jnp.ndarray, sector_offset_for_left_connector: int) -> tuple[jnp.ndarray, jnp.ndarray]:
+def angles_from_actions_normalized(
+    raw: jnp.ndarray, sectors: jnp.ndarray, sector_offset_for_left_connector: int
+) -> tuple[jnp.ndarray, jnp.ndarray]:
     """
     Map raw actions to angles that respect a budget and minimum angle.
 
@@ -25,7 +27,7 @@ def angles_from_actions_normalized(raw: jnp.ndarray, sectors: jnp.ndarray, secto
     mask = angles_there_already >= 0.0
     angles_there_already = jnp.where(mask, angles_there_already, 0.0)
     offset = 1 + sector_offset_for_left_connector
-    used_budget = angles_there_already.at[mask.sum()-offset].set(0).sum()
+    used_budget = angles_there_already.at[mask.sum() - offset].set(0).sum()
 
     budget = 2 * jnp.pi - used_budget
 
