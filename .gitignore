@@ -17,6 +17,11 @@ icml_results
 *.STL
 *.stl
 
+# Figures used in the README
+!/docs/assets/graph-generation.png
+!/docs/assets/scalability.png
+!/docs/assets/method.png
+
 # Distribution / packaging
 .Python
 .idea
