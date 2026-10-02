@@ -7,7 +7,7 @@ meta:
   enable_cuda: true
 
 env:
-  parallel_env: true
+  parallel_env: false
   num_nodes: 60
   step_limit: 600
   num_envs: 30
