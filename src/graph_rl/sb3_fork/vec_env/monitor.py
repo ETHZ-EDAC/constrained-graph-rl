@@ -6,7 +6,6 @@ from typing import Any, SupportsFloat
 
 # Third-party
 import gymnasium as gym
-import numpy as np
 from gymnasium.core import ActType, ObsType
 
 

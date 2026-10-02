@@ -14,7 +14,6 @@ import torch as th
 from torch.utils.tensorboard import SummaryWriter
 
 # First-party
-from graph_rl.sb3_fork.common.utils import get_latest_run_id
 
 __all__ = ["PPOLogger"]
 

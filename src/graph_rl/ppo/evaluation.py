@@ -1,7 +1,7 @@
 # Standard library
 import logging
 from pathlib import Path
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 # Third-party
 import numpy as np
@@ -9,9 +9,10 @@ import torch
 from torch_geometric.data import Batch
 
 # First-party
-from graph_rl.ppo.env import RULE_SPECS
 from graph_rl.sb3_fork.vec_env.monitor import Monitor
-from graph_rl.utils import PARAMS
+
+if TYPE_CHECKING:
+    from graph_rl.sb3_fork.base_optim import BaseOptim
 
 
 def evaluate_policy(
@@ -125,9 +126,7 @@ def evaluate_policy(
 
                 episode_rewards.append(current_rewards)
                 episode_lengths.append(current_lengths)
-                episode_terminal_rewards.append(
-                    float(infos["terminal_reward"]) if "terminal_reward" in infos else None
-                )
+                episode_terminal_rewards.append(float(infos["terminal_reward"]) if "terminal_reward" in infos else None)
 
                 current_rewards = 0
                 current_lengths = 0

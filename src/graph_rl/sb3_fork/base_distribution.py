@@ -15,11 +15,7 @@ SelfSquashedDiagGaussianDistribution = TypeVar(
     "SelfSquashedDiagGaussianDistribution", bound="SquashedDiagGaussianDistribution"
 )
 SelfCategoricalDistribution = TypeVar("SelfCategoricalDistribution", bound="CategoricalDistribution")
-SelfMultiCategoricalDistribution = TypeVar("SelfMultiCategoricalDistribution", bound="MultiCategoricalDistribution")
 SelfBernoulliDistribution = TypeVar("SelfBernoulliDistribution", bound="BernoulliDistribution")
-SelfStateDependentNoiseDistribution = TypeVar(
-    "SelfStateDependentNoiseDistribution", bound="StateDependentNoiseDistribution"
-)
 
 
 class Distribution(ABC):
@@ -230,7 +226,10 @@ class SquashedDiagGaussianDistribution(DiagGaussianDistribution):
         # We use numpy to avoid numerical instability
         if gaussian_actions is None:
             eps = th.finfo(actions.dtype).eps
-            atanh = lambda x: 0.5 * (x.log1p() - (-x).log1p())
+
+            def atanh(x):
+                return 0.5 * (x.log1p() - (-x).log1p())
+
             gaussian_actions = atanh(actions.clamp(min=-1.0 + eps, max=1.0 - eps))
 
         # Log likelihood for a Gaussian distribution

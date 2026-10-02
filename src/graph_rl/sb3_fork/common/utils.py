@@ -3,9 +3,8 @@ import glob
 import math
 import os
 import pathlib
-import random
 from collections import deque
-from typing import Callable, Union
+from typing import TYPE_CHECKING, Callable, Union
 
 # Third-party
 import gymnasium as gym
@@ -15,6 +14,11 @@ from gymnasium import spaces
 
 # Check if tensorboard is available for pytorch
 from torch_geometric.data import Batch, Data
+
+if TYPE_CHECKING:
+    from graph_rl.ppo.callbacks import BaseCallback
+    from graph_rl.sb3_fork.vec_env.base_vec_env import BaseVecEnv
+
 
 TensorDict = dict[str, th.Tensor]
 MaybeCallback = Union[None, Callable, list["BaseCallback"], "BaseCallback"]
@@ -70,9 +74,9 @@ class FloatSchedule:
         elif isinstance(value_schedule, (float, int)):
             self.value_schedule = ConstantSchedule(float(value_schedule))
         else:
-            assert callable(
-                value_schedule
-            ), f"The learning rate schedule must be a float or a callable, not {value_schedule}"
+            assert callable(value_schedule), (
+                f"The learning rate schedule must be a float or a callable, not {value_schedule}"
+            )
             self.value_schedule = value_schedule
 
     def __call__(self, progress_remaining: float) -> float:

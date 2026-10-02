@@ -20,8 +20,6 @@ from graph_rl.utils.adjacency_utils import get_edge_vectors, get_symmetric_adjac
 logger = get_logger()
 
 
-
-
 @jax.jit
 def rule_1(
     constants: Constants, params: Dict[str, jnp.ndarray], idx: jnp.ndarray

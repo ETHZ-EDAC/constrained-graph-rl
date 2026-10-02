@@ -292,24 +292,28 @@ def main(cfg: DictConfig) -> None:
             overrides_str = ", ".join(f"{k}={v}" for k, v in sorted(batch["config"].items())) or "(default)"
             print(f"    {batch['name']}: samples={sample_display} overrides={overrides_str}")
 
-    best_generator, best_data = run_generator_batches(
-        base_config,
-        generator_batches,
-        target_metrics=target_metrics,
-        metric_reward_weight=weight,
-        default_samples=num_samples,
-        seed=seed,
-        verbose=verbose_generators,
-        require_planar=require_planar,
-    ) if generator_batches else find_best_from_generators(
-        base_config,
-        target_metrics=target_metrics,
-        metric_reward_weight=weight,
-        num_samples=num_samples,
-        seed=seed,
-        include_generators=include,
-        verbose=verbose_generators,
-        require_planar=require_planar,
+    best_generator, best_data = (
+        run_generator_batches(
+            base_config,
+            generator_batches,
+            target_metrics=target_metrics,
+            metric_reward_weight=weight,
+            default_samples=num_samples,
+            seed=seed,
+            verbose=verbose_generators,
+            require_planar=require_planar,
+        )
+        if generator_batches
+        else find_best_from_generators(
+            base_config,
+            target_metrics=target_metrics,
+            metric_reward_weight=weight,
+            num_samples=num_samples,
+            seed=seed,
+            include_generators=include,
+            verbose=verbose_generators,
+            require_planar=require_planar,
+        )
     )
 
     if plot_dir is not None and best_data is not None:
@@ -349,7 +353,10 @@ def main(cfg: DictConfig) -> None:
     if best_generator.get("samples") is not None:
         print(f"  samples: {int(best_generator['samples'])}")
     if best_generator["config_overrides"]:
-        override_summary = ", ".join(f"{key}={best_generator['config_overrides'][key]}" for key in sorted(best_generator["config_overrides"].keys()))
+        override_summary = ", ".join(
+            f"{key}={best_generator['config_overrides'][key]}"
+            for key in sorted(best_generator["config_overrides"].keys())
+        )
         print(f"  overrides: {override_summary}")
     print(f"  planar: {bool(best_generator['planarity'])} (score={float(best_generator['planarity_score']):.3f})")
     print(f"  metrics: {_format_candidate_metrics(best_generator['candidate_metrics'])}")
@@ -371,15 +378,24 @@ def main(cfg: DictConfig) -> None:
             f"planar={int(info['planar_samples'])} fully_valid={int(info['accepted_samples'])}"
         )
         if info["parameters"]:
-            print("    parameters: " + ", ".join(f"{key}={info['parameters'][key]}" for key in sorted(info["parameters"].keys())))
+            print(
+                "    parameters: "
+                + ", ".join(f"{key}={info['parameters'][key]}" for key in sorted(info["parameters"].keys()))
+            )
         if info["config_overrides"]:
-            print("    overrides: " + ", ".join(f"{key}={info['config_overrides'][key]}" for key in sorted(info["config_overrides"].keys())))
+            print(
+                "    overrides: "
+                + ", ".join(f"{key}={info['config_overrides'][key]}" for key in sorted(info["config_overrides"].keys()))
+            )
         if info["candidate_metrics"]:
             print(f"    metrics: {_format_candidate_metrics(info['candidate_metrics'])}")
         if info["metric_statistics"]:
             print(f"    mean_std: {_format_metric_statistics(info['metric_statistics'])}")
         if info["differences"]:
-            print("    metric_diffs: " + ", ".join(f"{metric}={float(val):.4f}" for metric, val in sorted(info["differences"].items())))
+            print(
+                "    metric_diffs: "
+                + ", ".join(f"{metric}={float(val):.4f}" for metric, val in sorted(info["differences"].items()))
+            )
         if info["constraint_report"]:
             for line in _format_constraint_report(info["constraint_report"]):
                 print(f"    {line}")
@@ -397,7 +413,9 @@ def main(cfg: DictConfig) -> None:
             if info["best_valid_differences"]:
                 print(
                     "      metric_diffs: "
-                    + ", ".join(f"{metric}={float(val):.4f}" for metric, val in sorted(info["best_valid_differences"].items()))
+                    + ", ".join(
+                        f"{metric}={float(val):.4f}" for metric, val in sorted(info["best_valid_differences"].items())
+                    )
                 )
         else:
             print("    best_fully_valid: none")
@@ -410,9 +428,16 @@ def main(cfg: DictConfig) -> None:
         for variant in variant_map[gen_name]:
             reward_val = variant["reward"]
             reward_str = "n/a" if reward_val is None or not np.isfinite(reward_val) else f"{float(reward_val):.6f}"
-            label = ", ".join(f"{key}={variant['config_overrides'][key]}" for key in sorted(variant["config_overrides"].keys())) or "(default)"
+            label = (
+                ", ".join(
+                    f"{key}={variant['config_overrides'][key]}" for key in sorted(variant["config_overrides"].keys())
+                )
+                or "(default)"
+            )
             sample_str = "n/a" if variant["samples"] is None else str(int(variant["samples"]))
-            print(f"    {label}: reward={reward_str} samples={sample_str} seed={variant['seed']} sample={variant['sample_index']}")
+            print(
+                f"    {label}: reward={reward_str} samples={sample_str} seed={variant['seed']} sample={variant['sample_index']}"
+            )
             if variant["metric_statistics"]:
                 print(f"      mean_std: {_format_metric_statistics(variant['metric_statistics'])}")
             if variant["constraint_report"]:

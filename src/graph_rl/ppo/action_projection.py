@@ -1,12 +1,10 @@
 # Standard library
-import math
 import sys
 from typing import Any, Callable, Dict, Optional, Sequence, Tuple
 
 # Third-party
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torch_geometric.data import Batch
 from torch_geometric.utils import to_dense_batch
 from tqdm import tqdm
@@ -190,9 +188,7 @@ def train_action_projector(
             if active_mask.any():
                 scale_samples.append(aux["scale"].detach()[active_mask].reshape(-1))
                 shift_samples.append(aux["shift"].detach()[active_mask].reshape(-1))
-            loss = compute_projection_supervised_loss(
-                batch.actions_nominal, batch.actions_projected_env, proj_pred
-            )
+            loss = compute_projection_supervised_loss(batch.actions_nominal, batch.actions_projected_env, proj_pred)
 
             optimizer.zero_grad()
             loss.backward()

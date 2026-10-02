@@ -152,17 +152,17 @@ class PPO(BaseOptim):
         # because of the advantage normalization
         self.num_minibatches = n_steps // batch_size
         if normalize_advantage:
-            assert (
-                batch_size > 1
-            ), "`batch_size` must be greater than 1. See https://github.com/DLR-RM/stable-baselines3/issues/440"
+            assert batch_size > 1, (
+                "`batch_size` must be greater than 1. See https://github.com/DLR-RM/stable-baselines3/issues/440"
+            )
 
         if self.env is not None:
             # Check that `n_steps * n_envs > 1` to avoid NaN
             # when doing advantage normalization
             buffer_size = self.env.num_envs * self.n_steps
-            assert buffer_size > 1 or (
-                not normalize_advantage
-            ), f"`n_steps * n_envs` must be greater than 1. Currently n_steps={self.n_steps} and n_envs={self.env.num_envs}"
+            assert buffer_size > 1 or (not normalize_advantage), (
+                f"`n_steps * n_envs` must be greater than 1. Currently n_steps={self.n_steps} and n_envs={self.env.num_envs}"
+            )
             # Check that the rollout buffer size is a multiple of the mini-batch size
             untruncated_batches = buffer_size // batch_size
             if buffer_size % batch_size > 0:
@@ -239,9 +239,7 @@ class PPO(BaseOptim):
         self.clip_range = FloatSchedule(self.clip_range)
         if self.clip_range_vf is not None:
             if isinstance(self.clip_range_vf, (float, int)):
-                assert self.clip_range_vf > 0, (
-                    "`clip_range_vf` must be positive, " "pass `None` to deactivate vf clipping"
-                )
+                assert self.clip_range_vf > 0, "`clip_range_vf` must be positive, pass `None` to deactivate vf clipping"
 
             self.clip_range_vf = FloatSchedule(self.clip_range_vf)
 
@@ -285,9 +283,9 @@ class PPO(BaseOptim):
         assert self.env is not None
 
         while self.num_timesteps < total_timesteps:
-            self.stdout_logger.info(f"  ")
-            self.stdout_logger.info(f" ----- Starting PPO iteration # {self.iteration+1} ----- ")
-            self.stdout_logger.info(f"  ")
+            self.stdout_logger.info("  ")
+            self.stdout_logger.info(f" ----- Starting PPO iteration # {self.iteration + 1} ----- ")
+            self.stdout_logger.info("  ")
 
             self.stdout_logger.info("Collecting rollouts ...")
             continue_training = self.collect_rollouts(
@@ -338,7 +336,7 @@ class PPO(BaseOptim):
         continue_training = True
 
         # --- NEW: progress bar over epochs ---
-        self.stdout_logger.info(f"Starting training ...")
+        self.stdout_logger.info("Starting training ...")
         n_epochs = int(self.n_epochs)  # ensure it's an int
         pbar = tqdm(total=n_epochs, desc="PPO epochs", leave=True, file=sys.__stdout__) if tqdm is not None else None
         # train for n_epochs epochs
@@ -349,7 +347,6 @@ class PPO(BaseOptim):
             n_minibatches = 0
             # Do a complete pass on the rollout buffer
             for rollout_data in self.rollout_buffer.get(self.batch_size):
-
                 rollout_data = rollout_data.to(self.device)
                 if self.use_action_projector:
                     _, log_det_jac = self.action_projector(rollout_data, rollout_data.actions_nominal)
@@ -701,7 +698,7 @@ class PPO(BaseOptim):
         assert self.ep_success_buffer is not None
 
         time_elapsed = max((time.time_ns() - self.start_time) / 1e9, sys.float_info.epsilon)
-        fps = int((self.num_timesteps - self._num_timesteps_at_start) / time_elapsed)
+        int((self.num_timesteps - self._num_timesteps_at_start) / time_elapsed)
         if iteration > 0:
             self.ppo_logger.record("time/iterations", iteration, exclude="tensorboard")
         if len(self.ep_info_buffer) > 0 and len(self.ep_info_buffer[0]) > 0:

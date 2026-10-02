@@ -17,8 +17,6 @@ from graph_rl.utils import PARAMS
 from graph_rl.utils.adjacency_utils import get_edge_vectors, get_symmetric_adjacency, num_vertices
 
 
-
-
 @jax.jit
 def rule_5(
     constants: Constants, params: Dict[str, jnp.ndarray], idx: jnp.ndarray
