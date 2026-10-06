@@ -122,12 +122,13 @@ Readme files  in the `ext` directory.
 If you use this code or method please cite us using:
 
 ```bibtex
-@inproceedings{
-hochuli2026constrained,
+@misc{hochuli2026constrainedgoaldirectedplanargraph,
 title={Constrained Goal-directed Planar Graph Generation with Grammar-based Reinforcement Learning},
-author={Hochuli, Nicolas and Miele, Lorenzo and Shea, Kristina and Stankovic, Tino},
-booktitle={The Fortieth Annual Conference on Neural Information Processing Systems},
+author={Nicolas Hochuli and Lorenzo Miele and Kristina Shea and Tino Stankovic},
 year={2026},
-url={https://openreview.net/forum?id=9Sh3SI4EF1}
+eprint={2610.06244},
+archivePrefix={arXiv},
+primaryClass={cs.LG},
+url={https://arxiv.org/abs/2610.06244},
 }
 ```
